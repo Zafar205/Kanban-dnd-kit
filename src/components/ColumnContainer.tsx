@@ -18,6 +18,7 @@ const ColumnContainer = (props: Props) => {
         }
     })
 
+
     const style = {
         transition,
         transform: CSS.Transform.toString(transform)
