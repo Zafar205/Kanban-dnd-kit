@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import type { Column, ID } from '../types';
+import type { Column, ID, Task } from '../types';
 import ColumnContainer from './ColumnContainer';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext } from '@dnd-kit/sortable';
@@ -8,8 +8,8 @@ import { createPortal } from 'react-dom';
 
 const Kanban = () => {
   const [columns, setColumns] = useState<Column[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([])
   const [activeColumn, setActiveColumn] = useState<Column | null>();
-  
 
   //array of colum ids
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns])
@@ -58,7 +58,15 @@ const Kanban = () => {
       return arrayMove(columns, activeColumnIndex, overColumnIndex)
     })
   }
-    function updateColumn(id : ID, title: string){
+  function createTask(columnId: ID){
+    const newTask: Task = {
+      id : generateId(),
+      columnId,
+      content : `Task ${tasks.length + 1}`
+    } 
+    setTasks([...tasks, newTask])
+  }
+  function updateColumn(id : ID, title: string){
         const newColumns = columns.map((col) => {
           if(col.id !== id) return col;
           return {...col, title};
@@ -82,7 +90,7 @@ const Kanban = () => {
           <div className='flex gap-4'>
             <SortableContext items={columnsId}>
               {columns.map((col) => (
-                <ColumnContainer key={col.id} column={col} deleteColumn={deleteColumn} updateColumn={updateColumn}/>
+                <ColumnContainer key={col.id} column={col} deleteColumn={deleteColumn} updateColumn={updateColumn} createTask={createTask}/>
               ))}
             </SortableContext>
           </div>
@@ -95,7 +103,7 @@ const Kanban = () => {
           createPortal(
             <DragOverlay>
               {activeColumn && (
-                <ColumnContainer deleteColumn={deleteColumn} column={activeColumn} updateColumn={updateColumn}/>
+                <ColumnContainer deleteColumn={deleteColumn} column={activeColumn} updateColumn={updateColumn} createTask={createTask}/>
               )}
             </DragOverlay>, document.body
           )
