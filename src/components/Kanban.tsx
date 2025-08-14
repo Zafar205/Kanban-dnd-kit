@@ -7,8 +7,9 @@ import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
 
 const Kanban = () => {
-  const [columns, setColumns] = useState<Column[]>([])
-  const [activeColumn, setActiveColumn] = useState<Column | null>()
+  const [columns, setColumns] = useState<Column[]>([]);
+  const [activeColumn, setActiveColumn] = useState<Column | null>();
+  
 
   //array of colum ids
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns])
@@ -57,6 +58,14 @@ const Kanban = () => {
       return arrayMove(columns, activeColumnIndex, overColumnIndex)
     })
   }
+    function updateColumn(id : ID, title: string){
+        const newColumns = columns.map((col) => {
+          if(col.id !== id) return col;
+          return {...col, title};
+        });
+
+        setColumns(newColumns);
+    }
   const sensors = useSensors(
           useSensor(PointerSensor, {
               activationConstraint : {
@@ -73,7 +82,7 @@ const Kanban = () => {
           <div className='flex gap-4'>
             <SortableContext items={columnsId}>
               {columns.map((col) => (
-                <ColumnContainer key={col.id} column={col} deleteColumn={deleteColumn} />
+                <ColumnContainer key={col.id} column={col} deleteColumn={deleteColumn} updateColumn={updateColumn}/>
               ))}
             </SortableContext>
           </div>
@@ -86,7 +95,7 @@ const Kanban = () => {
           createPortal(
             <DragOverlay>
               {activeColumn && (
-                <ColumnContainer deleteColumn={deleteColumn} column={activeColumn} />
+                <ColumnContainer deleteColumn={deleteColumn} column={activeColumn} updateColumn={updateColumn}/>
               )}
             </DragOverlay>, document.body
           )
