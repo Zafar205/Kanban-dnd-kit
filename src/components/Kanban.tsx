@@ -58,30 +58,30 @@ const Kanban = () => {
       return arrayMove(columns, activeColumnIndex, overColumnIndex)
     })
   }
-  function createTask(columnId: ID){
+  function createTask(columnId: ID) {
     const newTask: Task = {
-      id : generateId(),
+      id: generateId(),
       columnId,
-      content : `Task ${tasks.length + 1}`
-    } 
+      content: `Task ${tasks.length + 1}`
+    }
     setTasks([...tasks, newTask])
   }
-  function updateColumn(id : ID, title: string){
-        const newColumns = columns.map((col) => {
-          if(col.id !== id) return col;
-          return {...col, title};
-        });
+  function updateColumn(id: ID, title: string) {
+    const newColumns = columns.map((col) => {
+      if (col.id !== id) return col;
+      return { ...col, title };
+    });
 
-        setColumns(newColumns);
-    }
+    setColumns(newColumns);
+  }
   const sensors = useSensors(
-          useSensor(PointerSensor, {
-              activationConstraint : {
-                  distance : 3 //3px
-              }
-          })
-      )
-  
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3 //3px
+      }
+    })
+  )
+
   return (
     <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden px-[40px]">
       <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
@@ -90,7 +90,8 @@ const Kanban = () => {
           <div className='flex gap-4'>
             <SortableContext items={columnsId}>
               {columns.map((col) => (
-                <ColumnContainer key={col.id} column={col} deleteColumn={deleteColumn} updateColumn={updateColumn} createTask={createTask}/>
+                <ColumnContainer key={col.id} column={col} deleteColumn={deleteColumn} updateColumn={updateColumn} createTask={createTask}
+                  tasks={tasks.filter((task) => task.columnId === col.id)} />
               ))}
             </SortableContext>
           </div>
@@ -103,7 +104,8 @@ const Kanban = () => {
           createPortal(
             <DragOverlay>
               {activeColumn && (
-                <ColumnContainer deleteColumn={deleteColumn} column={activeColumn} updateColumn={updateColumn} createTask={createTask}/>
+                <ColumnContainer deleteColumn={deleteColumn} column={activeColumn} updateColumn={updateColumn} createTask={createTask}
+                  tasks={tasks.filter((task) => task.columnId === activeColumn.id)} />
               )}
             </DragOverlay>, document.body
           )

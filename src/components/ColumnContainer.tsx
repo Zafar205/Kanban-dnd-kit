@@ -1,17 +1,19 @@
-import type { Column, ID } from "../types"
+import type { Column, ID, Task } from "../types"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
+import TaskCard from "./TaskCard"
 interface Props {
     column: Column,
     deleteColumn: (id: ID) => void,
     updateColumn: (id: ID, title: string) => void,
-    createTask: (columnId: ID) => void
+    createTask: (columnId: ID) => void,
+    tasks: Task[]
 }
 
 const ColumnContainer = (props: Props) => {
-    const { column, deleteColumn, updateColumn, createTask} = props;
+    const { column, deleteColumn, updateColumn, createTask, tasks} = props;
     const [editMode, setEditMode] = useState(false);
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
@@ -61,7 +63,13 @@ const ColumnContainer = (props: Props) => {
                 </div>
             </div>
 
-            <div className="flex flex-grow">Content</div>
+            <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
+                {
+                    tasks.map((task) => (
+                        <TaskCard key={task.id} task={task}/>
+                    ))
+                }
+            </div>
 
             <button className="flex gap-2 items-center border-gray-800 border-2 rounded-md p-4 hover:text-rose-500 active:bg-black"
                     onClick={()=>{
