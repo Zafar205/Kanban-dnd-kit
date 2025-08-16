@@ -10,11 +10,12 @@ interface Props {
     updateColumn: (id: ID, title: string) => void,
     createTask: (columnId: ID) => void,
     deleteTask: (taskId : ID) => void,
+    updateTask: (taskId : ID, content : string) => void,
     tasks: Task[]
 }
 
 const ColumnContainer = (props: Props) => {
-    const { column, deleteColumn, updateColumn, createTask, deleteTask,tasks} = props;
+    const { column, deleteColumn, updateColumn, createTask, deleteTask, updateTask ,tasks} = props;
     const [editMode, setEditMode] = useState(false);
 
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
@@ -67,7 +68,7 @@ const ColumnContainer = (props: Props) => {
             <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
                 {
                     tasks.map((task) => (
-                        <TaskCard key={task.id} task={task} deleteTask={deleteTask}/>
+                        <TaskCard key={task.id} task={task} deleteTask={deleteTask} updateTask={updateTask}/>
                     ))
                 }
             </div>

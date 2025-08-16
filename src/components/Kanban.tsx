@@ -67,6 +67,14 @@ const Kanban = () => {
     setTasks([...tasks, newTask])
   }
 
+  function updateTask(taskId: ID, content : string){
+    const newTasks = tasks.map((task)=> {
+      if(task.id !== taskId) return task;
+      return {...task, content}
+    })
+
+    setTasks(newTasks)
+  }
   function deleteTask(taskId: ID) {
     const newTasks = tasks.filter((task)=> task.id !== taskId);
     setTasks(newTasks)
@@ -97,6 +105,7 @@ const Kanban = () => {
               {columns.map((col) => (
                 <ColumnContainer key={col.id} column={col} deleteColumn={deleteColumn} updateColumn={updateColumn} createTask={createTask}
                   deleteTask={deleteTask}
+                  updateTask={updateTask}
                   tasks={tasks.filter((task) => task.columnId === col.id)} />
               ))}
             </SortableContext>
@@ -111,7 +120,8 @@ const Kanban = () => {
             <DragOverlay>
               {activeColumn && (
                 <ColumnContainer deleteColumn={deleteColumn} column={activeColumn} updateColumn={updateColumn} createTask={createTask} deleteTask={deleteTask}
-                  tasks={tasks.filter((task) => task.columnId === activeColumn.id)} />
+                  tasks={tasks.filter((task) => task.columnId === activeColumn.id)}
+                  updateTask={updateTask} />
               )}
             </DragOverlay>, document.body
           )
