@@ -30,9 +30,12 @@ const Kanban = () => {
   }
 
   function deleteColumn(id: ID) {
-    console.log("delete trigerred")
+    // console.log("delete trigerred")
     const filteredColumns = columns.filter(col => col.id !== id)
     setColumns(filteredColumns);
+
+    const newTasks = tasks.filter((t) => t.columnId !== id)
+    setTasks(newTasks);
   }
 
   function onDragStart(event: DragStartEvent) {
@@ -77,16 +80,35 @@ const Kanban = () => {
 
     const isActiveATask = active.data.current?.type === "Task";
     const isOverATask = over.data.current?.type === "Task";
+
+    if(!isActiveATask) return;
     // I am Dragging Task over other Task
 
     if(isActiveATask && isOverATask){
       setTasks((tasks)=>{
         const activeIndex  = tasks.findIndex((t)=> t.id === activeColumnId);
         const overIndex  = tasks.findIndex((t)=> t.id === overColumnId);
+        if(tasks[activeIndex].columnId !== tasks[overIndex].columnId){
+          tasks[activeIndex].columnId = tasks[overIndex].columnId
+        }
         return arrayMove(tasks, activeIndex, overIndex)
       })
     }
     // I am Dragging Task over other Column
+
+    const isOverAColumn = over.data.current?.type === "Column";
+
+    if(isActiveATask && isOverAColumn){
+      setTasks((tasks)=>{
+        const activeIndex  = tasks.findIndex((t)=> t.id === activeColumnId);
+        // const overIndex  = tasks.findIndex((t)=> t.id === overColumnId);
+        if(tasks[activeIndex].columnId !== overColumnId){
+          tasks[activeIndex].columnId = overColumnId
+        }
+        return arrayMove(tasks, activeIndex, activeIndex)
+      })
+
+    }
 
   }
   function createTask(columnId: ID) {
