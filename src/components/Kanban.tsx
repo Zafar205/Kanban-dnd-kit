@@ -5,11 +5,13 @@ import ColumnContainer from './ColumnContainer';
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { createPortal } from 'react-dom';
+import TaskCard from './TaskCard';
 
 const Kanban = () => {
   const [columns, setColumns] = useState<Column[]>([]);
   const [tasks, setTasks] = useState<Task[]>([])
   const [activeColumn, setActiveColumn] = useState<Column | null>();
+  const [activeTask, setActiveTask] = useState<Task | null>();
 
   //array of colum ids
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns])
@@ -37,6 +39,11 @@ const Kanban = () => {
     // console.log("Drag Start", event)
     if (event.active.data.current?.type === "Column") {
       setActiveColumn(event.active.data.current?.column);
+      return;
+    }
+    //for Tasks
+    if (event.active.data.current?.type === "Task") {
+      setActiveTask(event.active.data.current?.task);
       return;
     }
   }
@@ -123,6 +130,11 @@ const Kanban = () => {
                   tasks={tasks.filter((task) => task.columnId === activeColumn.id)}
                   updateTask={updateTask} />
               )}
+              {
+                activeTask && (
+                  <TaskCard task={activeTask} updateTask={updateTask} deleteTask={deleteTask} />
+                )
+              }
             </DragOverlay>, document.body
           )
         }
